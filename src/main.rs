@@ -2,26 +2,33 @@ use yew::prelude::*;
 
 struct Model {
     link: ComponentLink<Self>,
-    value: i64,
+    value: String,
 }
 
 enum Msg {
-    AddOne,
+    GotInput(String),
+    Clicked,
 }
 
 impl Component for Model {
     type Message = Msg;
     type Properties = ();
+
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
-            value: 0,
+            value: "".into(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::AddOne => self.value += 1
+            Msg::GotInput(new_value) => {
+                self.value = new_value;
+            }
+            Msg::Clicked => {
+                self.value = "aaa".to_string();
+            }
         }
         true
     }
@@ -36,8 +43,17 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <div>
-                <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
-                <p>{ self.value }</p>
+                <div>
+                    <textarea rows=5
+                        value=&self.value
+                        oninput=self.link.callback(|e: InputData| Msg::GotInput(e.value))
+                        placeholder="placeholder">
+                    </textarea>
+                    <button onclick=self.link.callback(|_| Msg::Clicked)>{ "change value" }</button>
+                </div>
+                <div>
+                    {&self.value}
+                </div>
             </div>
         }
     }
